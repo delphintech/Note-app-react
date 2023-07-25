@@ -1,34 +1,18 @@
 import React from "react"
-import Showdown from "showdown"
-import ReactMde from "react-mde"
+import MDEditor from '@uiw/react-md-editor';
 
 export default function Editor({ currentNote, updateNote }) {
     const [selectedTab, setSelectedTab] = React.useState("write")
 
-    const converter = new Showdown.Converter({
-        tables: true,
-        simplifiedAutoLink: true,
-        strikethrough: true,
-        tasklists: true,
-    })
 
-    const mdParser = new MarkdownIt(/* Markdown-it options */);
-    function handleEditorChange({ html, text }) {
-      console.log('handleEditorChange', html, text);
-    }
     return (
         <section className="pane editor">
-            <ReactMde
-                value={currentNote.body}
-                onChange={updateNote}
-                selectedTab={selectedTab}
-                onTabChange={setSelectedTab}
-                generateMarkdownPreview={(markdown) =>
-                    Promise.resolve(converter.makeHtml(markdown))
-                }
-                minEditorHeight={80}
-                heightUnits="vh"
-            />
+          <MDEditor
+            value={currentNote.body}
+            onChange={updateNote}
+            style={{height: "100%"}}
+           />
+          {/* <MDEditor.Markdown source={currentNote.body} style={{ whiteSpace: 'pre-wrap' }} /> */}
         </section>
     )
 }
