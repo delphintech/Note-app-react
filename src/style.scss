@@ -28,9 +28,9 @@ button:focus {
     height: 100vh;
 }
 
-.sidebar--note {
-    /* display: flex; */
-}
+// .sidebar--note {
+//     /* display: flex; */
+// }
 
 .sidebar--header {
     display: flex;
@@ -200,6 +200,6 @@ button:focus {
     left: -2px
 }
 
-.wmde-markdown-var.w-md-editor.w-md-editor-show-live {
+.wmde-markdown-var.w-md-editor {
   height: 100% !important;
 }
