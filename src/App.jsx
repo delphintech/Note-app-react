@@ -2,14 +2,13 @@ import React from "react"
 import Sidebar from "./components/Sidebar"
 import Editor from "./components/Editor"
 import Split from "react-split"
-import { notesCollection } from "./firebase"
-import { addDoc, onSnapshot } from "firebase/firestore"
+import { db, notesCollection } from "./firebase"
+import { onSnapshot, addDoc, deleteDoc, doc, setDoc } from "firebase/firestore"
 
 export default function App() {
-  const [notes, setNotes] = React.useState(JSON.parse(localStorage.getItem("notes")) || [])
+  const [notes, setNotes] = React.useState([])
 
-
-  const [currentNoteId, setCurrentNoteId] = React.useState(notes[0]?.id || "" )
+  const [currentNoteId, setCurrentNoteId] = React.useState("")
 
   const currentNote = notes.find(note => note.id === currentNoteId) || notes[0]
 
@@ -22,39 +21,27 @@ export default function App() {
     return unsubscribe
   }, [])
 
+  React.useEffect (() => {!currentNoteId && setCurrentNoteId(notes[0]?.id)}, [notes])
+
   async function createNewNote() {
     const newNote = { body: "# Type your markdown note's title here" }
     const newNoteRef = await addDoc(notesCollection, newNote)
     setCurrentNoteId(newNoteRef.id)
   }
 
-  function updateNote(text) {
-      setNotes(oldNotes => {
-        const newNotes = []
-        oldNotes.forEach(note => {
-          if (note.id === currentNoteId) {
-            note.body = text
-            newNotes.unshift(note)
-          } else {
-            newNotes.push(note)
-          }
-        })
-        return newNotes
-      })
+  async function updateNote(text) {
+    const docRef = doc(db, "notes", currentNoteId)
+    await setDoc(docRef, { body: text }, { merge: true })
   }
 
-  function deleteNote(event, noteId) {
-    event.stopPropagation()
-    setNotes(oldNotes =>
-      oldNotes.filter(note => note.id !== noteId)
-    )
+  async function deleteNote(noteId) {
+    const noteRef = doc(db, "notes", noteId)
+    await deleteDoc(noteRef)
   }
 
   return (
       <main>
-      {
-          notes.length > 0
-          ?
+        { notes.length > 0 ?
           <Split
               sizes={[30, 70]}
               direction="horizontal"
