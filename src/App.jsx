@@ -16,6 +16,7 @@ export default function App() {
     const unsubscribe = onSnapshot(notesCollection, function(snapshot) {
       // Sync up our local notes array with the snapshot data
       const notesArray = snapshot.docs.map(doc => ({...doc.data(), id: doc.id }))
+        .sort((a,b) => b.updatedAt - a.updatedAt)
       setNotes(notesArray)
     })
     return unsubscribe
@@ -24,14 +25,18 @@ export default function App() {
   React.useEffect (() => {!currentNoteId && setCurrentNoteId(notes[0]?.id)}, [notes])
 
   async function createNewNote() {
-    const newNote = { body: "# Type your markdown note's title here" }
+    const newNote = {
+      body: "# Type your markdown note's title here",
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+     }
     const newNoteRef = await addDoc(notesCollection, newNote)
     setCurrentNoteId(newNoteRef.id)
   }
 
   async function updateNote(text) {
     const docRef = doc(db, "notes", currentNoteId)
-    await setDoc(docRef, { body: text }, { merge: true })
+    await setDoc(docRef, {body: text, updatedAt: Date.now() }, { merge: true })
   }
 
   async function deleteNote(noteId) {
