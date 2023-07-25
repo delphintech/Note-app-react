@@ -1,6 +1,6 @@
 import React from "react"
-import ReactMde from "react-mde"
 import Showdown from "showdown"
+import ReactMde from "react-mde"
 
 export default function Editor({ currentNote, updateNote }) {
     const [selectedTab, setSelectedTab] = React.useState("write")
@@ -12,6 +12,10 @@ export default function Editor({ currentNote, updateNote }) {
         tasklists: true,
     })
 
+    const mdParser = new MarkdownIt(/* Markdown-it options */);
+    function handleEditorChange({ html, text }) {
+      console.log('handleEditorChange', html, text);
+    }
     return (
         <section className="pane editor">
             <ReactMde
